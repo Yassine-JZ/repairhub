@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -33,6 +34,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _ville.dispose();
     super.dispose();
   }
+    Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final auth = context.read<AuthProvider>();
+    final ok = await auth.signUp(
+      nom: _nom.text,
+      email: _email.text,
+      password: _password.text,
+      role: _role,
+      ville: _ville.text,
+    );
+
+    if (!mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compte créé avec succès !')),
+      );
+      // TODO: redirection selon le rôle (étape suivante)
+    }
+  }
 
   InputDecoration _field(String label, IconData icon, {Widget? suffix}) {
     return InputDecoration(
@@ -54,6 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -254,7 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () => _formKey.currentState?.validate(),
+                              onPressed: auth.isLoading ? null : _submit,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: _teal,
                                 foregroundColor: Colors.white,
@@ -263,7 +285,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
-                              child: const Text(
+                              child: auth.isLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                              : const Text(
                                 'S’inscrire',
                                 style: TextStyle(
                                   fontSize: 16,

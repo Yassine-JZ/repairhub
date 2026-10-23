@@ -19,17 +19,33 @@ class AuthService {
     if (!doc.exists) return null;
     return Utilisateur.fromMap(doc.data()!);
   }
+  
 
   // Inscription (partie CRÉATION DE COMPTE) - à faire par Aziz
-  Future<Utilisateur?> signUp({
+    Future<Utilisateur?> signUp({
     required String nom,
     required String email,
     required String password,
     required String role,
     required String ville,
   }) async {
-    // TODO
-    throw UnimplementedError();
+    final cred = await _auth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    final uid = cred.user!.uid;
+
+    final user = Utilisateur(
+      uid: uid,
+      nom: nom.trim(),
+      email: email.trim(),
+      role: role,
+      ville: ville.trim(),
+    );
+
+    // On enregistre le profil dans Firestore: users/{uid}
+    await _db.collection('users').doc(uid).set(user.toMap());
+    return user;
   }
 
   Future<void> signOut() async {

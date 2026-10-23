@@ -34,7 +34,50 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     return _user != null;
   }
+    Future<bool> signUp({
+    required String nom,
+    required String email,
+    required String password,
+    required String role,
+    required String ville,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
+    try {
+      _user = await _service.signUp(
+        nom: nom,
+        email: email,
+        password: password,
+        role: role,
+        ville: ville,
+      );
+    } on FirebaseAuthException catch (e) {
+      _errorMessage = _messageErreurInscription(e.code);
+    } catch (_) {
+      _errorMessage = "Une erreur est survenue. Réessayez.";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return _user != null;
+  }
+
+  String _messageErreurInscription(String code) {
+    switch (code) {
+      case 'email-already-in-use':
+        return "Cet email est déjà utilisé.";
+      case 'invalid-email':
+        return "Email invalide.";
+      case 'weak-password':
+        return "Mot de passe trop faible (6 caractères minimum).";
+      case 'network-request-failed':
+        return "Pas de connexion internet.";
+      default:
+        return "Erreur d'inscription ($code).";
+    }
+  }
   Future<void> signOut() async {
     await _service.signOut();
     _user = null;
