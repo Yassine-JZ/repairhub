@@ -1,13 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/utilisateur.dart';
 
 class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   // Connexion (partie LOGIN)
   Future<Utilisateur?> signIn(String email, String password) async {
-    // TODO: implémenter avec FirebaseAuth
-    throw UnimplementedError();
+    final cred = await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    final uid = cred.user!.uid;
+
+    // On lit le profil (nom, rôle, ville) dans Firestore
+    final doc = await _db.collection('users').doc(uid).get();
+    if (!doc.exists) return null;
+    return Utilisateur.fromMap(doc.data()!);
   }
 
-  // Inscription (partie CRÉATION DE COMPTE)
+  // Inscription (partie CRÉATION DE COMPTE) - à faire par Aziz
   Future<Utilisateur?> signUp({
     required String nom,
     required String email,
@@ -15,12 +28,11 @@ class AuthService {
     required String role,
     required String ville,
   }) async {
-    // TODO: implémenter avec FirebaseAuth + Firestore
+    // TODO
     throw UnimplementedError();
   }
 
   Future<void> signOut() async {
-    // TODO
-    throw UnimplementedError();
+    await _auth.signOut();
   }
 }

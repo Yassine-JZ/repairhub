@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "676808690443",
+    "project_id": "repairhub-766e5",
+    "storage_bucket": "repairhub-766e5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676808690443:android:8216679dace7a054b7b00e",
+        "android_client_info": {
+          "package_name": "com.repairhub.repairhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD69kmVfD2IkoF2BRBFd6Suuq3Gjvxr5cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
